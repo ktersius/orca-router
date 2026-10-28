@@ -31,6 +31,6 @@ None. The repository has no existing main specs.
 
 This is greenfield application work: no source, test suite, or container implementation exists yet. Adds a Node.js application, SQLite persistence, router image, configuration/runbook, and narrow integrations with Linear's Agent Activity API and Orca's CLI. No Orca source changes or Linear issue workflow-state changes are intended.
 
-The earlier `docs/mvp.md` is a discussion draft: this proposal supersedes its same-host/tunnel assumptions, prescribed fake-adapter approach, and unresolved stack/trigger choices. `docs/linear-agent-lifecycle.md` describes a broader lifecycle; this change intentionally excludes elicitation and ordinary prompted resumption.
+This OpenSpec change is the canonical MVP plan. `docs/linear-agent-lifecycle.md` describes a broader lifecycle; this change intentionally excludes elicitation and ordinary prompted resumption.
 
 Cross-container coordinator identity, exact JSON envelopes, cancellation guarantees, and backend question behavior remain verification gates—not established capabilities of this application. If unsupported, stop and revisit the design rather than fall back to terminal heuristics.

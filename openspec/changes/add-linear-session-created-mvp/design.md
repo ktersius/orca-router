@@ -2,7 +2,7 @@
 
 ## Context
 
-See proposal.md for motivation and the two delta specs for behavior. This repository currently contains documentation and agent tooling, not application code or tests. The broad lifecycle reference includes features deliberately excluded here. The accepted Docker topology supersedes the earlier same-host MVP draft.
+See proposal.md for motivation and the two delta specs for behavior. This repository currently contains documentation and agent tooling, not application code or tests. The broad lifecycle reference includes features deliberately excluded here. This change defines the accepted two-container MVP topology.
 
 Read-only inspection of the installed Orca CLI establishes documented commands, not a proven deployed integration:
 

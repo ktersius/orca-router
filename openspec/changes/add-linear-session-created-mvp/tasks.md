@@ -35,5 +35,5 @@
 ## 6. Package and prove the two-container deployment
 
 - [ ] 6.1 Package Node.js and a pinned compatible Orca CLI in the router image, keeping the execution runtime external; verify a container restart preserves SQLite state and runtime connectivity without local repository or agent credentials.
-- [ ] 6.2 Document manual setup for Linear app scopes/credentials, authenticated private runtime access, HTTPS ingress, persistent volumes, one router replica, execution permission boundaries, retention costs, and rollback; verify the runbook in a disposable two-container environment and update the earlier MVP draft to point at the accepted design.
+- [ ] 6.2 Document manual setup for Linear app scopes/credentials, authenticated private runtime access, HTTPS ingress, persistent volumes, one router replica, execution permission boundaries, retention costs, and rollback; verify the runbook in a disposable two-container environment.
 - [ ] 6.3 With explicit approval, run bounded real-Orca integration checks and a dedicated Linear sandbox smoke test covering mention/delegation, acknowledgment timing, completion with/without a requested PR, blocking, busy rejection, stop, and restart; record evidence against both specs and verify ordinary tests require neither live API writes nor paid workers.
