@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "skills": {
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "computedHash": "9cdbb4b8f7a3aeaef82e6230c9e823500d4a8a1214c726cf342cf9829d34fc7d"
+    },
+    "retro": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/retro/SKILL.md",
+      "computedHash": "b8d55851a2909e26c2dbb2e8563719c87b3b700559f604e4df344f8c27e21047"
+    },
+    "show-me": {
+      "source": "humanlayer/humanlayer",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "apps/riptide-pi-extension/skills/show-me/SKILL.md",
+      "computedHash": "65893c350335e5a377f3e3f9470f96ab12291d1e19f5dc53987616604f9d6c03"
+    }
+  }
+}
