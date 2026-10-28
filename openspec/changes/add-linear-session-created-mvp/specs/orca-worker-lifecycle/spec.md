@@ -24,6 +24,17 @@ The router SHALL persist an attempt and launch intent before invoking worker sta
 - **WHEN** a structured event cannot be correlated to the expected active attempt
 - **THEN** it does not change that attempt's state or release its slot and is retained for inspection
 
+### Requirement: Mandatory task worktree placement
+Every attempt, including live integration checks, SHALL use a new isolated task worktree on a non-default task branch. It SHALL NOT execute in the primary checkout or on main, master, or the configured default branch. If placement cannot be established, the router SHALL NOT dispatch task instructions to the worker.
+
+#### Scenario: Placement is safe
+- **WHEN** a new attempt is launched
+- **THEN** its task executes only in its new worktree on a non-default branch
+
+#### Scenario: Placement is unsafe or unverifiable
+- **WHEN** the target resolves to the primary checkout, a prohibited branch, or unverified placement
+- **THEN** task execution is not started and the placement failure is reported
+
 ### Requirement: Explicit worker reporting contract
 Workers SHALL receive instructions to use Orca's injected blocking ask command for clarification and worker_done with explicit succeeded or failed outcome for settlement. The router SHALL consume documented structured messages rather than infer lifecycle state from terminal prose, silence, or idleness.
 
@@ -58,6 +69,22 @@ The router SHALL persist stop intent and prevent further router-driven task acti
 - **WHEN** the runtime disconnects during cancellation
 - **THEN** the router preserves stop intent and uncertainty without claiming the worker stopped
 
+### Requirement: Persistent execution deadline
+The router SHALL default to a configurable 30-minute deadline measured from confirmed worker startup and persisted across restarts. Deadline expiry SHALL request attempt-scoped cancellation, not imply termination. Recorded blocked attempts SHALL be exempt from automatic deadline cancellation. Uncertain stopping SHALL retain the slot; confirmed timeout stopping SHALL release it without cleanup or retry.
+
+#### Scenario: Router restarts during execution
+- **WHEN** the router restarts with an active worker whose deadline has passed
+- **THEN** it reconciles that attempt and requests cancellation if still executing rather than starting a fresh 30-minute allowance
+
+#### Scenario: Worker is blocked
+- **WHEN** the worker has been explicitly recorded as blocked awaiting clarification
+- **THEN** passage of its execution deadline alone does not cancel or close it
+
+#### Scenario: Worker remains busy past the cap
+- **WHEN** an unsettled, non-blocked worker reaches the deadline even with recent liveness signals
+- **THEN** the router persists timeout intent and requests cancellation of that exact attempt
+- **AND** it releases the slot only with positive stopping evidence
+
 ### Requirement: Conservative recovery
 After restart or ambiguous launch, the router SHALL reconcile persisted execution intent and receipts before another launch. An unresolved attempt SHALL occupy the slot and SHALL NOT be automatically retried as new work. Confirmed no-launch failures, settlements, and stops SHALL free the slot.
 
@@ -79,12 +106,20 @@ The router SHALL preserve worktrees and worker conversations using supported Orc
 - **WHEN** explicit success settles an attempt
 - **THEN** its resources remain available for inspection while the slot becomes available for a new task
 
-### Requirement: Restricted task authority
-Workers SHALL be permitted to edit, test, push task branches, and create review PRs within authorized scope, but SHALL NOT merge or deploy. The deployment SHALL enforce these boundaries through available permissions rather than relying solely on prompt instructions.
+### Requirement: Operator-approved execution environment
+The MVP SHALL permit reuse of the current operator-approved runtime environment and credentials without requiring a dedicated identity or new branch protections. Worker instructions SHALL prohibit merging and deployment; documentation SHALL NOT claim those restrictions are technically enforced. Normal tasks SHALL permit authorized task-branch pushes and review PRs.
 
-#### Scenario: Task requests a deployment or merge
-- **WHEN** task content asks for an operation beyond the pilot's authority
-- **THEN** it does not gain the required permissions and the unmet request is reported rather than executed
+#### Scenario: Existing credentials are reused
+- **WHEN** the operator configures the current execution environment for the pilot
+- **THEN** a new restricted identity is not a rollout prerequisite
+- **AND** the worker receives no-merge/no-deploy instructions without a false sandbox guarantee
+
+### Requirement: Scoped live-test instructions
+Existing repositories SHALL be permitted for explicitly approved bounded integration tests. Test workers SHALL receive a small explicit instruction set prohibiting pushes and PR creation unless that particular test requires them. The mandatory task-worktree placement SHALL apply to all such tests.
+
+#### Scenario: Basic lifecycle test
+- **WHEN** a live test exercises launch, question, completion, or cancellation without needing publication
+- **THEN** its instructions prohibit pushes and PR creation and confine task work to a new isolated worktree
 
 ### Requirement: Verified integration gate
 Live execution SHALL remain disabled until the selected CLI/runtime/backend combination demonstrates cross-container coordinator operation, structured question correlation, explicit outcomes, cancellation, delivery replay, and recovery. Missing support SHALL stop rollout rather than trigger terminal scraping.
